@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "Bash(ipconfig getifaddr:*)",
+      "Bash(pkill:*)",
+      "Bash(npx netlify:*)",
+      "Bash(npx netlify-cli:*)",
+      "WebFetch(domain:vite-pwa-org.netlify.app)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:upstash.com)",
+      "WebFetch(domain:developers.netlify.com)",
+      "Bash(python3:*)",
+      "Bash(node -e:*)",
+      "Bash(node scripts/generate-vapid-keys.mjs:*)",
+      "Bash(netlify:*)",
+      "Bash(/Users/oliver/.npm-global/bin/netlify:*)",
+      "Bash(ping:*)",
+      "Bash(nslookup:*)",
+      "Bash(echo:*)",
+      "Bash(networksetup:*)",
+      "Bash(gh auth:*)",
+      "Bash(git --version:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
