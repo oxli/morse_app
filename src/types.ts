@@ -2,7 +2,7 @@ export interface MorseCode {
   [key: string]: string;
 }
 
-export type ExerciseType = 'recognition' | 'production';
+export type ExerciseType = 'production';
 
 export interface Exercise {
   id: number;
