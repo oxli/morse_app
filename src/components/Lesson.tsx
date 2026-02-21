@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import type { LessonData } from '../types';
 import { generateExercises } from '../data/curriculum';
 import { ExerciseCard } from './ExerciseCard';
@@ -50,12 +50,6 @@ export const Lesson = ({ lesson, onComplete, onExit }: LessonProps) => {
     }
   }, [currentIndex, exercises.length]);
 
-  useEffect(() => {
-    if (isComplete) {
-      const timer = setTimeout(() => onComplete(score, exercises.length), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isComplete, score, exercises.length, onComplete]);
 
   if (showIntro) {
     return (
@@ -70,17 +64,24 @@ export const Lesson = ({ lesson, onComplete, onExit }: LessonProps) => {
     const percentage = Math.round((score / exercises.length) * 100);
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6">
-        <div className="text-center max-w-sm mx-auto">
+        <div className="text-center max-w-sm mx-auto w-full">
           <h2 className="text-3xl font-bold mb-4">Lesson Complete!</h2>
           <div className="text-6xl font-bold text-amber-400 mb-4">{percentage}%</div>
-          <p className="text-slate-400 text-lg mb-8">{score} of {exercises.length} correct</p>
+          <p className="text-slate-400 text-lg mb-6">{score} of {exercises.length} correct</p>
           {percentage >= 80 ? (
-            <p className="text-emerald-400 text-xl">Great work!</p>
+            <p className="text-emerald-400 text-xl mb-8">Great work!</p>
           ) : percentage >= 60 ? (
-            <p className="text-amber-400 text-xl">Good effort! Keep practicing!</p>
+            <p className="text-amber-400 text-xl mb-8">Good effort! Keep practicing!</p>
           ) : (
-            <p className="text-slate-400 text-xl">Try this lesson again to improve!</p>
+            <p className="text-slate-400 text-xl mb-8">Try this lesson again to improve!</p>
           )}
+          <button
+            onClick={() => onComplete(score, exercises.length)}
+            className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500
+                       text-white font-semibold text-lg transition-colors"
+          >
+            Continue
+          </button>
         </div>
       </div>
     );

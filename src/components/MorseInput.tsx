@@ -91,16 +91,9 @@ export const MorseInput = ({ expectedMorse, onComplete, disabled }: MorseInputPr
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (disabled || isCheckingRef.current) return;
-    if (e.key === '.' || e.key === ',') {
-      e.preventDefault();
-      handleDot();
-    } else if (e.key === '-' || e.key === '/') {
-      e.preventDefault();
-      handleDash();
-    } else if (e.key === 'Backspace') {
-      e.preventDefault();
-      handleBackspace();
-    }
+    if (e.key === '.' || e.key === ',') { e.preventDefault(); handleDot(); }
+    else if (e.key === '-' || e.key === '/') { e.preventDefault(); handleDash(); }
+    else if (e.key === 'Backspace') { e.preventDefault(); handleBackspace(); }
   }, [disabled, handleDot, handleDash, handleBackspace]);
 
   useEffect(() => {
@@ -109,28 +102,24 @@ export const MorseInput = ({ expectedMorse, onComplete, disabled }: MorseInputPr
   }, [handleKeyDown]);
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      {/* Input display */}
-      <div className="h-16 flex items-center justify-center gap-3 min-w-[200px]">
-        {input.length === 0 ? (
-          <span className="text-slate-500 text-lg"> </span>
-        ) : (
-          input.split('').map((char, i) => (
+    <div className="flex flex-col items-center gap-4">
+
+      {/* Entered morse — only visible when input exists */}
+      {input.length > 0 && (
+        <div className="flex items-center justify-center gap-3 min-h-[2rem]">
+          {input.split('').map((char, i) => (
             <div
               key={i}
-              className={`
-                ${char === '.' ? 'w-6 h-6 rounded-full' : 'w-12 h-6 rounded-sm'}
-                bg-amber-400
-              `}
+              className={`${char === '.' ? 'w-5 h-5 rounded-full' : 'w-10 h-5 rounded-sm'} bg-amber-400`}
             />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* Submit progress bar — fills as silence timer counts down */}
-      <div className="w-full max-w-xs h-1 bg-slate-700 rounded-full overflow-hidden">
+      {/* Submit countdown bar — visible while timer is running */}
+      <div className="w-full max-w-xs h-2 bg-slate-700 rounded-full overflow-hidden">
         <div
-          className="h-full bg-amber-400 rounded-full"
+          className="h-full bg-amber-400 rounded-full transition-none"
           style={{ width: `${submitProgress}%` }}
         />
       </div>

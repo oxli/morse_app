@@ -40,42 +40,40 @@ export const Home = ({ progress, onStartLesson, onOpenSettings }: HomeProps) => 
       </div>
 
       {/* Streak Card */}
-      <div className="bg-gradient-to-br from-amber-600 to-orange-700 rounded-2xl p-6 mb-6 shadow-lg">
+      <div className="bg-gradient-to-br from-amber-600 to-orange-700 rounded-xl p-3 mb-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-amber-100 text-sm mb-1">Current Streak</p>
-            <p className="text-4xl font-bold text-white">
+            <p className="text-amber-100 text-xs mb-0.5">Current Streak</p>
+            <p className="text-2xl font-bold text-white">
               {progress.currentStreak}
-              <span className="text-2xl ml-1">
+              <span className="text-sm ml-1">
                 {progress.currentStreak === 1 ? 'day' : 'days'}
               </span>
             </p>
+            {progress.longestStreak > progress.currentStreak && (
+              <p className="text-amber-200 text-xs mt-0.5">
+                Best: {progress.longestStreak} days
+              </p>
+            )}
+            {!streakActive && progress.currentStreak > 0 && (
+              <p className="text-amber-200 text-xs mt-0.5">Practice today to keep it!</p>
+            )}
           </div>
-          <div className="text-6xl">
+          <div className="text-4xl">
             {streakActive ? '🔥' : '💤'}
           </div>
         </div>
-        {progress.longestStreak > progress.currentStreak && (
-          <p className="text-amber-200 text-sm mt-2">
-            Longest streak: {progress.longestStreak} days
-          </p>
-        )}
-        {!streakActive && progress.currentStreak > 0 && (
-          <p className="text-amber-200 text-sm mt-2">
-            Practice today to keep your streak!
-          </p>
-        )}
       </div>
 
       {/* Progress Card */}
-      <div className="bg-slate-800 rounded-2xl p-6 mb-6">
-        <div className="flex justify-between items-center mb-3">
-          <p className="text-slate-300">Overall Progress</p>
-          <p className="text-slate-400 text-sm">
+      <div className="bg-slate-800 rounded-xl p-3 mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <p className="text-slate-300 text-sm">Overall Progress</p>
+          <p className="text-slate-400 text-xs">
             {completedCount} / {totalLessons} lessons
           </p>
         </div>
-        <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
+        <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
           <div
             className="h-full bg-emerald-500 transition-all duration-500"
             style={{ width: `${progressPercentage}%` }}
