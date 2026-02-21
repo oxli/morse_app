@@ -50,9 +50,11 @@ export const ExerciseCard = ({
         </div>
       </div>
 
+      {/* Label — sits just below progress bar */}
+      <p className="text-slate-400 text-sm text-center pt-4">Tap to enter morse</p>
+
       {/* Letter — vertically centered in remaining space above morse input */}
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <p className="text-slate-400 text-sm mb-4">Tap to enter morse</p>
+      <div className="flex-1 flex items-center justify-center">
         <div className="text-8xl font-bold text-amber-400">
           {exercise.letter}
         </div>
