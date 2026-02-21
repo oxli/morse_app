@@ -18,7 +18,7 @@ export const LetterIntro = ({ letters, isReview, onStart }: LetterIntroProps) =>
 
   return (
     <div className="flex-1 flex flex-col p-6 overflow-y-auto">
-      <div className="flex flex-col items-center max-w-md mx-auto w-full">
+      <div className="flex flex-col items-center max-w-lg mx-auto w-full">
         <h2 className="text-2xl font-bold mb-2 text-center">
           {isReview ? 'Review Time!' : 'New Letters'}
         </h2>

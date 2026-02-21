@@ -20,7 +20,8 @@ export const Home = ({ progress, onStartLesson, onOpenSettings }: HomeProps) => 
   const progressPercentage = Math.round((completedCount / totalLessons) * 100);
 
   return (
-    <div className="min-h-screen flex flex-col p-6">
+    <div className="min-h-screen flex flex-col">
+    <div className="flex-1 flex flex-col w-full max-w-lg mx-auto p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold">Morse Code</h1>
@@ -162,6 +163,7 @@ export const Home = ({ progress, onStartLesson, onOpenSettings }: HomeProps) => 
           })}
         </div>
       </div>
+    </div>
     </div>
   );
 };

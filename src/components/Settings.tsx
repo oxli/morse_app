@@ -30,7 +30,8 @@ export const Settings = ({
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-6">
+    <div className="min-h-screen flex flex-col">
+    <div className="flex-1 flex flex-col w-full max-w-lg mx-auto p-6">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <button
@@ -124,6 +125,7 @@ export const Settings = ({
         <p>Morse Code Trainer</p>
         <p className="mt-1">Learn morse code one letter at a time</p>
       </div>
+    </div>
     </div>
   );
 };
