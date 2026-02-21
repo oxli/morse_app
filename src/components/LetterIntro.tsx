@@ -17,7 +17,7 @@ export const LetterIntro = ({ letters, isReview, onStart }: LetterIntroProps) =>
   }, [playMorse]);
 
   return (
-    <div className="min-h-screen flex flex-col p-6">
+    <div className="flex-1 flex flex-col p-6">
       <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto">
         <h2 className="text-2xl font-bold mb-2 text-center">
           {isReview ? 'Review Time!' : 'New Letters'}

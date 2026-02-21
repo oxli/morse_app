@@ -50,10 +50,7 @@ export const useAudio = () => {
     return new Promise(resolve => setTimeout(resolve, ms));
   }, []);
 
-  const playMorse = useCallback(async (
-    morse: string,
-    onElement?: (index: number, type: 'dot' | 'dash') => void
-  ): Promise<void> => {
+  const playMorse = useCallback(async (morse: string): Promise<void> => {
     if (isPlayingRef.current) return;
     isPlayingRef.current = true;
 
@@ -67,13 +64,9 @@ export const useAudio = () => {
     for (let i = 0; i < elements.length; i++) {
       if (!isPlayingRef.current) break;
 
-      const element = elements[i];
-
-      if (element === '.') {
-        onElement?.(i, 'dot');
+      if (elements[i] === '.') {
         await playDit();
-      } else if (element === '-') {
-        onElement?.(i, 'dash');
+      } else if (elements[i] === '-') {
         await playDah();
       }
 
@@ -84,10 +77,6 @@ export const useAudio = () => {
 
     isPlayingRef.current = false;
   }, [getAudioContext, playDit, playDah, wait]);
-
-  const stopPlayback = useCallback(() => {
-    isPlayingRef.current = false;
-  }, []);
 
   const playFeedback = useCallback(async (correct: boolean) => {
     const ctx = getAudioContext();
@@ -117,9 +106,6 @@ export const useAudio = () => {
     playMorse,
     playDit,
     playDah,
-    stopPlayback,
     playFeedback,
-    DIT_DURATION,
-    DAH_DURATION,
   };
 };

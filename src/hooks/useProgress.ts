@@ -56,10 +56,6 @@ export const useProgress = () => {
     saveProgress(defaultProgress);
   }, [saveProgress]);
 
-  const isLessonCompleted = useCallback((lessonId: number): boolean => {
-    return progress.completedLessons.includes(lessonId);
-  }, [progress.completedLessons]);
-
   const isLessonUnlocked = useCallback((lessonId: number): boolean => {
     return lessonId <= progress.currentLesson;
   }, [progress.currentLesson]);
@@ -69,7 +65,6 @@ export const useProgress = () => {
     isLoaded,
     completeLesson,
     resetProgress,
-    isLessonCompleted,
     isLessonUnlocked,
   };
 };

@@ -1,4 +1,5 @@
-import type { LessonData } from '../types';
+import type { Exercise, LessonData } from '../types';
+import { getMorse } from './morseCode';
 
 // Letters ordered by English frequency
 const LETTER_ORDER = [
@@ -55,3 +56,44 @@ export const getLesson = (id: number): LessonData | undefined => {
 };
 
 export const getTotalLessons = (): number => LESSONS.length;
+
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+export const generateExercises = (lesson: LessonData): Exercise[] => {
+  const exercises: Exercise[] = [];
+  let exerciseId = 0;
+
+  // New letters: 2 exercises each for focused practice
+  lesson.newLetters.forEach(letter => {
+    for (let i = 0; i < 2; i++) {
+      exercises.push({ id: exerciseId++, letter, morse: getMorse(letter) });
+    }
+  });
+
+  // Review letters: up to 4 exercises
+  shuffleArray(lesson.reviewLetters).slice(0, 4).forEach(letter => {
+    exercises.push({ id: exerciseId++, letter, morse: getMorse(letter) });
+  });
+
+  // Fill to minimum 15, weighting new letters 3:1 over review
+  const needed = Math.max(15, exercises.length) - exercises.length;
+  if (needed > 0) {
+    const newWeight = lesson.newLetters.length > 0 ? 3 : 1;
+    const fillPool = [
+      ...Array(newWeight).fill(lesson.newLetters).flat(),
+      ...lesson.reviewLetters,
+    ];
+    shuffleArray(fillPool).slice(0, needed).forEach(letter => {
+      exercises.push({ id: exerciseId++, letter, morse: getMorse(letter) });
+    });
+  }
+
+  return shuffleArray(exercises);
+};
