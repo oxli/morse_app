@@ -104,17 +104,15 @@ export const MorseInput = ({ expectedMorse, onComplete, disabled }: MorseInputPr
   return (
     <div className="flex flex-col items-center gap-4">
 
-      {/* Entered morse — only visible when input exists */}
-      {input.length > 0 && (
-        <div className="flex items-center justify-center gap-3 min-h-[2rem]">
-          {input.split('').map((char, i) => (
-            <div
-              key={i}
-              className={`${char === '.' ? 'w-5 h-5 rounded-full' : 'w-10 h-5 rounded-sm'} bg-amber-400`}
-            />
-          ))}
-        </div>
-      )}
+      {/* Entered morse — space always reserved to prevent layout shift */}
+      <div className="flex items-center justify-center gap-3 h-8">
+        {input.split('').map((char, i) => (
+          <div
+            key={i}
+            className={`${char === '.' ? 'w-5 h-5 rounded-full' : 'w-10 h-5 rounded-sm'} bg-amber-400`}
+          />
+        ))}
+      </div>
 
       {/* Submit countdown bar — visible while timer is running */}
       <div className="w-full max-w-xs h-2 bg-slate-700 rounded-full overflow-hidden">

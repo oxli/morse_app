@@ -65,9 +65,10 @@ export const useNotifications = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem(SETTINGS_KEY);
+    let parsed = defaultSettings;
     if (stored) {
       try {
-        const parsed = JSON.parse(stored);
+        parsed = JSON.parse(stored);
         if (!parsed.notificationTime) parsed.notificationTime = '09:00';
         setSettings(parsed);
       } catch {
@@ -76,6 +77,20 @@ export const useNotifications = () => {
     }
     if ('Notification' in window) {
       setPermission(Notification.permission);
+    }
+
+    // On iOS, the PWA has a different push endpoint than Safari.
+    // Re-register on every PWA launch to ensure Redis has the correct subscription.
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as { standalone?: boolean }).standalone === true;
+    if (
+      isStandalone &&
+      parsed.notificationsEnabled &&
+      'Notification' in window &&
+      Notification.permission === 'granted'
+    ) {
+      registerPushSubscription(parsed.notificationTime);
     }
   }, []);
 

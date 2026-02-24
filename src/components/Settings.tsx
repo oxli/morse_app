@@ -11,6 +11,10 @@ interface SettingsProps {
   onClose: () => void;
 }
 
+const isStandalone = () =>
+  window.matchMedia('(display-mode: standalone)').matches ||
+  (navigator as { standalone?: boolean }).standalone === true;
+
 export const Settings = ({
   settings,
   permission,
@@ -21,6 +25,8 @@ export const Settings = ({
   onResetProgress,
   onClose,
 }: SettingsProps) => {
+  const standalone = isStandalone();
+
   const handleNotificationToggle = async () => {
     if (settings.notificationsEnabled) {
       onDisableNotifications();
@@ -48,6 +54,13 @@ export const Settings = ({
       {/* Notifications Section */}
       <div className="bg-slate-800 rounded-2xl p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Notifications</h2>
+
+        {/* iOS standalone warning */}
+        {!standalone && (
+          <div className="mb-4 p-3 bg-amber-900/40 border border-amber-700/50 rounded-lg text-sm text-amber-300">
+            Open this app from your home screen icon to enable push notifications on iPhone.
+          </div>
+        )}
 
         {/* Enable/Disable toggle */}
         <div className="flex items-center justify-between mb-4">
