@@ -38,7 +38,7 @@ export const Lesson = ({ lesson, onComplete, onExit }: LessonProps) => {
   const currentExercise = exercises[currentIndex];
 
   const introLetters = useMemo(() => {
-    return lesson.newLetters.length > 0 ? lesson.newLetters : lesson.reviewLetters.slice(0, 6);
+    return lesson.newLetters.length > 0 ? lesson.newLetters : lesson.reviewLetters;
   }, [lesson]);
 
   const handleExerciseComplete = useCallback((correct: boolean) => {

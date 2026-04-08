@@ -69,30 +69,37 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 export const generateExercises = (lesson: LessonData): Exercise[] => {
   const exercises: Exercise[] = [];
   let exerciseId = 0;
+  const TOTAL = 15;
 
-  // New letters: 2 exercises each for focused practice
-  lesson.newLetters.forEach(letter => {
-    for (let i = 0; i < 2; i++) {
-      exercises.push({ id: exerciseId++, letter, morse: getMorse(letter) });
+  if (lesson.isReview || lesson.newLetters.length === 0) {
+    // Review lesson: draw evenly from all review letters
+    const pool: string[] = [];
+    while (pool.length < TOTAL) {
+      pool.push(...shuffleArray(lesson.reviewLetters));
     }
-  });
-
-  // Review letters: up to 4 exercises
-  shuffleArray(lesson.reviewLetters).slice(0, 4).forEach(letter => {
-    exercises.push({ id: exerciseId++, letter, morse: getMorse(letter) });
-  });
-
-  // Fill to minimum 15, weighting new letters 3:1 over review
-  const needed = Math.max(15, exercises.length) - exercises.length;
-  if (needed > 0) {
-    const newWeight = lesson.newLetters.length > 0 ? 3 : 1;
-    const fillPool = [
-      ...Array(newWeight).fill(lesson.newLetters).flat(),
-      ...lesson.reviewLetters,
-    ];
-    shuffleArray(fillPool).slice(0, needed).forEach(letter => {
+    pool.slice(0, TOTAL).forEach(letter => {
       exercises.push({ id: exerciseId++, letter, morse: getMorse(letter) });
     });
+  } else {
+    // New lesson: ~80% new letters, ~20% review
+    const newCount = Math.round(TOTAL * 0.8); // 12
+    const reviewCount = TOTAL - newCount;     // 3
+
+    // Repeat new letters as needed to fill newCount
+    const newPool: string[] = [];
+    while (newPool.length < newCount) {
+      newPool.push(...shuffleArray(lesson.newLetters));
+    }
+    newPool.slice(0, newCount).forEach(letter => {
+      exercises.push({ id: exerciseId++, letter, morse: getMorse(letter) });
+    });
+
+    // Add review letters if available
+    if (lesson.reviewLetters.length > 0) {
+      shuffleArray(lesson.reviewLetters).slice(0, reviewCount).forEach(letter => {
+        exercises.push({ id: exerciseId++, letter, morse: getMorse(letter) });
+      });
+    }
   }
 
   return shuffleArray(exercises);
