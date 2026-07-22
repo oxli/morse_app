@@ -84,6 +84,11 @@ export const MorseInput = ({ expectedMorse, onComplete, disabled }: MorseInputPr
     setInput(prev => prev + '-');
   }, [disabled, playDah]);
 
+  const handleReset = useCallback(() => {
+    if (disabled || isCheckingRef.current) return;
+    setInput('');
+  }, [disabled]);
+
   const handleBackspace = useCallback(() => {
     if (disabled || isCheckingRef.current) return;
     setInput(prev => prev.slice(0, -1));
@@ -94,7 +99,8 @@ export const MorseInput = ({ expectedMorse, onComplete, disabled }: MorseInputPr
     if (e.key === '.' || e.key === ',') { e.preventDefault(); handleDot(); }
     else if (e.key === '-' || e.key === '/') { e.preventDefault(); handleDash(); }
     else if (e.key === 'Backspace') { e.preventDefault(); handleBackspace(); }
-  }, [disabled, handleDot, handleDash, handleBackspace]);
+    else if (e.key === 'Escape') { e.preventDefault(); handleReset(); }
+  }, [disabled, handleDot, handleDash, handleBackspace, handleReset]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -143,6 +149,17 @@ export const MorseInput = ({ expectedMorse, onComplete, disabled }: MorseInputPr
           <div className="w-20 h-8 rounded-sm bg-slate-300" />
         </button>
       </div>
+
+      {/* Reset button */}
+      <button
+        onClick={handleReset}
+        disabled={disabled || isChecking || input.length === 0}
+        className="w-full max-w-xs py-3 rounded-xl bg-slate-700 hover:bg-slate-600
+                   text-slate-300 font-semibold transition-colors
+                   disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        Reset
+      </button>
 
     </div>
   );

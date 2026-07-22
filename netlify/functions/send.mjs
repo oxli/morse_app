@@ -34,13 +34,14 @@ const getTodayInZone = (timeZone) => {
 };
 
 export default async () => {
-  const [enabled, subscriptionStr, notificationTime, timeZone, lastSent] =
+  const [enabled, subscriptionStr, notificationTime, timeZone, lastSent, lastPracticed] =
     await Promise.all([
       redis('GET', 'notificationsEnabled'),
       redis('GET', 'subscription'),
       redis('GET', 'notificationTime'),
       redis('GET', 'timeZone'),
       redis('GET', 'lastSent'),
+      redis('GET', 'lastPracticed'),
     ]);
 
   if (enabled !== 'true') {
@@ -65,6 +66,12 @@ export default async () => {
   const today = getTodayInZone(timeZone);
   if (lastSent === today) {
     return new Response(JSON.stringify({ skipped: 'already sent today' }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (lastPracticed === today) {
+    return new Response(JSON.stringify({ skipped: 'already practiced today' }), {
       headers: { 'Content-Type': 'application/json' },
     });
   }

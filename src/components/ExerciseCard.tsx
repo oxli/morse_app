@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import type { Exercise } from '../types';
 import { MorseInput } from './MorseInput';
 import { MorseDisplay } from './MorseDisplay';
@@ -20,6 +20,12 @@ export const ExerciseCard = ({
   const [showAnswer, setShowAnswer] = useState(false);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const { playMorse } = useAudio();
+
+  // Randomly display letter as upper or lower case each exercise
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const displayLetter = useMemo(() => Math.random() > 0.5
+    ? exercise.letter.toUpperCase()
+    : exercise.letter.toLowerCase(), [exercise.id]);
 
   useEffect(() => {
     setShowAnswer(false);
@@ -53,7 +59,7 @@ export const ExerciseCard = ({
         <div className="flex flex-col items-center gap-4">
           <p className="text-slate-400 text-sm">Tap to enter morse</p>
           <div className="text-8xl font-bold text-amber-400">
-            {exercise.letter}
+            {displayLetter}
           </div>
           <button
             onClick={() => playMorse(exercise.morse)}

@@ -50,6 +50,13 @@ export const useProgress = () => {
     };
 
     saveProgress(updatedProgress);
+
+    // Tell the server we practiced today so it skips the push notification
+    fetch('/api/practiced', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }),
+    }).catch(() => {});
   }, [progress, saveProgress]);
 
   const resetProgress = useCallback(() => {

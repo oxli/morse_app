@@ -22,11 +22,19 @@ export const LetterIntro = ({ letters, isReview, onStart }: LetterIntroProps) =>
         <h2 className="text-2xl font-bold mb-2 text-center">
           {isReview ? 'Review Time!' : 'New Letters'}
         </h2>
-        <p className="text-slate-400 mb-8 text-center">
+        <p className="text-slate-400 mb-4 text-center">
           {isReview
             ? 'Practice these letters you\'ve learned'
             : 'Learn these letters before starting exercises'}
         </p>
+
+        <button
+          onClick={onStart}
+          className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500
+                     text-white font-semibold text-lg transition-colors mb-6"
+        >
+          Start Exercises
+        </button>
 
         <div className="w-full space-y-4 mb-8">
           {letters.map((letter) => {

@@ -14,6 +14,12 @@ export const Home = ({ progress, onStartLesson, onOpenSettings }: HomeProps) => 
     return LESSONS.find(l => l.id === progress.currentLesson) || LESSONS[0];
   }, [progress.currentLesson]);
 
+  const lastCompletedLesson = useMemo(() => {
+    if (progress.completedLessons.length === 0) return null;
+    const lastId = Math.max(...progress.completedLessons);
+    return LESSONS.find(l => l.id === lastId) || null;
+  }, [progress.completedLessons]);
+
   const streakActive = isStreakActive(progress.lastLessonDate);
   const completedCount = progress.completedLessons.length;
   const totalLessons = getTotalLessons();
@@ -50,11 +56,9 @@ export const Home = ({ progress, onStartLesson, onOpenSettings }: HomeProps) => 
                 {progress.currentStreak === 1 ? 'day' : 'days'}
               </span>
             </p>
-            {progress.longestStreak > progress.currentStreak && (
-              <p className="text-amber-200 text-xs mt-0.5">
-                Best: {progress.longestStreak} days
-              </p>
-            )}
+            <p className="text-amber-200 text-xs mt-0.5">
+              Best: {progress.longestStreak} {progress.longestStreak === 1 ? 'day' : 'days'}
+            </p>
             {!streakActive && progress.currentStreak > 0 && (
               <p className="text-amber-200 text-xs mt-0.5">Practice today to keep it!</p>
             )}
@@ -81,29 +85,33 @@ export const Home = ({ progress, onStartLesson, onOpenSettings }: HomeProps) => 
         </div>
       </div>
 
-      {/* Start Lesson Button */}
-      <button
-        onClick={() => onStartLesson(nextLesson.id)}
-        className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl p-6 mb-6
-                   transition-colors shadow-lg"
-      >
-        <div className="flex items-center justify-between">
-          <div className="text-left">
-            <p className="text-emerald-100 text-sm mb-1">
-              {progress.completedLessons.includes(nextLesson.id) ? 'Continue' : 'Next Lesson'}
+      {/* Lesson Buttons */}
+      <div className={`grid gap-3 mb-6 ${lastCompletedLesson && lastCompletedLesson.id !== nextLesson.id ? 'grid-cols-2' : 'grid-cols-1'}`}>
+        {lastCompletedLesson && lastCompletedLesson.id !== nextLesson.id && (
+          <button
+            onClick={() => onStartLesson(lastCompletedLesson.id)}
+            className="bg-slate-700 hover:bg-slate-600 text-white rounded-2xl p-4
+                       transition-colors shadow-lg text-left"
+          >
+            <p className="text-slate-400 text-xs mb-1">Redo Last</p>
+            <p className="font-bold text-sm leading-tight">
+              Lesson {lastCompletedLesson.id}: {lastCompletedLesson.title}
             </p>
-            <p className="text-xl font-bold">
-              Lesson {nextLesson.id}: {nextLesson.title}
-            </p>
-          </div>
-          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-      </button>
+          </button>
+        )}
+        <button
+          onClick={() => onStartLesson(nextLesson.id)}
+          className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl p-4
+                     transition-colors shadow-lg text-left"
+        >
+          <p className="text-emerald-100 text-xs mb-1">
+            {progress.completedLessons.includes(nextLesson.id) ? 'Continue' : 'Next Lesson'}
+          </p>
+          <p className="font-bold text-sm leading-tight">
+            Lesson {nextLesson.id}: {nextLesson.title}
+          </p>
+        </button>
+      </div>
 
       {/* Lesson List */}
       <div className="flex-1">
