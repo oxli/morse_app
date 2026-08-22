@@ -8,6 +8,7 @@ interface LessonProps {
   lesson: LessonData;
   onComplete: (score: number, total: number) => void;
   onExit: () => void;
+  onMistake: (letter: string) => void;
 }
 
 const CloseIcon = () => (
@@ -28,7 +29,7 @@ const LessonHeader = ({ title, onExit }: { title: string; onExit: () => void }) 
   </div>
 );
 
-export const Lesson = ({ lesson, onComplete, onExit }: LessonProps) => {
+export const Lesson = ({ lesson, onComplete, onExit, onMistake }: LessonProps) => {
   const exercises = useMemo(() => generateExercises(lesson), [lesson]);
   const [showIntro, setShowIntro] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,13 +43,17 @@ export const Lesson = ({ lesson, onComplete, onExit }: LessonProps) => {
   }, [lesson]);
 
   const handleExerciseComplete = useCallback((correct: boolean) => {
-    if (correct) setScore(prev => prev + 1);
+    if (correct) {
+      setScore(prev => prev + 1);
+    } else {
+      onMistake(currentExercise.letter);
+    }
     if (currentIndex >= exercises.length - 1) {
       setIsComplete(true);
     } else {
       setCurrentIndex(prev => prev + 1);
     }
-  }, [currentIndex, exercises.length]);
+  }, [currentIndex, exercises.length, currentExercise, onMistake]);
 
 
   if (showIntro) {

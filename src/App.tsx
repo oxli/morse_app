@@ -4,6 +4,7 @@ import { Lesson } from './components/Lesson';
 import { Settings } from './components/Settings';
 import { useProgress } from './hooks/useProgress';
 import { useNotifications } from './hooks/useNotifications';
+import { useMistakes } from './hooks/useMistakes';
 import { getLesson } from './data/curriculum';
 
 type View = 'home' | 'lesson' | 'settings';
@@ -28,6 +29,8 @@ function App() {
     setReminderTime,
     sendTestNotification,
   } = useNotifications();
+
+  const { recordMistake, reviewLetters } = useMistakes();
 
   const handleStartLesson = useCallback((lessonId: number) => {
     if (isLessonUnlocked(lessonId)) {
@@ -73,6 +76,7 @@ function App() {
           lesson={lesson}
           onComplete={handleLessonComplete}
           onExit={handleLessonExit}
+          onMistake={recordMistake}
         />
       );
     }
@@ -96,6 +100,7 @@ function App() {
   return (
     <Home
       progress={progress}
+      reviewLetters={reviewLetters}
       onStartLesson={handleStartLesson}
       onOpenSettings={() => setView('settings')}
     />

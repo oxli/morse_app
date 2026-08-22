@@ -2,14 +2,16 @@ import { useMemo } from 'react';
 import type { Progress } from '../types';
 import { LESSONS, getTotalLessons } from '../data/curriculum';
 import { isStreakActive } from '../utils/streak';
+import { getMorse } from '../data/morseCode';
 
 interface HomeProps {
   progress: Progress;
+  reviewLetters: string[];
   onStartLesson: (lessonId: number) => void;
   onOpenSettings: () => void;
 }
 
-export const Home = ({ progress, onStartLesson, onOpenSettings }: HomeProps) => {
+export const Home = ({ progress, reviewLetters, onStartLesson, onOpenSettings }: HomeProps) => {
   const nextLesson = useMemo(() => {
     return LESSONS.find(l => l.id === progress.currentLesson) || LESSONS[0];
   }, [progress.currentLesson]);
@@ -112,6 +114,34 @@ export const Home = ({ progress, onStartLesson, onOpenSettings }: HomeProps) => 
           </p>
         </button>
       </div>
+
+      {/* Missed Letters Review */}
+      {reviewLetters.length > 0 && (
+        <div className="bg-slate-800 rounded-xl p-3 mb-4">
+          <h2 className="text-slate-400 text-xs font-semibold mb-2">
+            Review: Recently Missed
+          </h2>
+          <div className={`grid gap-2 ${reviewLetters.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+            {reviewLetters.map((letter) => (
+              <div
+                key={letter}
+                className="bg-slate-900 rounded-lg py-2 px-3 flex items-center justify-center gap-2"
+              >
+                <span className="text-lg font-bold text-amber-400">{letter}</span>
+                <div className="flex items-center gap-1 h-2">
+                  {getMorse(letter).split('').map((char, i) => (
+                    char === '.' ? (
+                      <div key={i} className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                    ) : (
+                      <div key={i} className="w-4 h-1.5 rounded-sm bg-slate-300" />
+                    )
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Lesson List */}
       <div className="flex-1">
