@@ -14,27 +14,35 @@ export default async (request) => {
 
   const { subscription, notificationTime, timeZone, enabled } = body;
 
-  if (enabled === false) {
-    await redis('SET', 'notificationsEnabled', 'false');
+  try {
+    if (enabled === false) {
+      await redis('SET', 'notificationsEnabled', 'false');
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!subscription?.endpoint || !notificationTime || !timeZone) {
+      return new Response('Missing required fields', { status: 400 });
+    }
+
+    await Promise.all([
+      redis('SET', 'subscription', JSON.stringify(subscription)),
+      redis('SET', 'notificationTime', notificationTime),
+      redis('SET', 'timeZone', timeZone),
+      redis('SET', 'notificationsEnabled', 'true'),
+    ]);
+
     return new Response(JSON.stringify({ ok: true }), {
       headers: { 'Content-Type': 'application/json' },
     });
+  } catch (err) {
+    console.error('subscribe: redis write failed:', err);
+    return new Response(JSON.stringify({ error: 'Failed to save subscription' }), {
+      status: 502,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
-
-  if (!subscription?.endpoint || !notificationTime || !timeZone) {
-    return new Response('Missing required fields', { status: 400 });
-  }
-
-  await Promise.all([
-    redis('SET', 'subscription', JSON.stringify(subscription)),
-    redis('SET', 'notificationTime', notificationTime),
-    redis('SET', 'timeZone', timeZone),
-    redis('SET', 'notificationsEnabled', 'true'),
-  ]);
-
-  return new Response(JSON.stringify({ ok: true }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
 };
 
 export const config = { path: '/api/subscribe' };

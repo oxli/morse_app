@@ -7,6 +7,17 @@ export const redis = async (command, ...args) => {
     },
     body: JSON.stringify([command, ...args]),
   });
-  const data = await res.json();
+
+  let data;
+  try {
+    data = await res.json();
+  } catch (err) {
+    throw new Error(`Redis ${command} failed: non-JSON response (HTTP ${res.status})`);
+  }
+
+  if (!res.ok || data.error) {
+    throw new Error(`Redis ${command} failed: ${data.error ?? `HTTP ${res.status}`}`);
+  }
+
   return data.result;
 };

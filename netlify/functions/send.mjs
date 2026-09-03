@@ -34,15 +34,24 @@ const getTodayInZone = (timeZone) => {
 };
 
 export default async () => {
-  const [enabled, subscriptionStr, notificationTime, timeZone, lastSent, lastPracticed] =
-    await Promise.all([
-      redis('GET', 'notificationsEnabled'),
-      redis('GET', 'subscription'),
-      redis('GET', 'notificationTime'),
-      redis('GET', 'timeZone'),
-      redis('GET', 'lastSent'),
-      redis('GET', 'lastPracticed'),
-    ]);
+  let enabled, subscriptionStr, notificationTime, timeZone, lastSent, lastPracticed;
+  try {
+    [enabled, subscriptionStr, notificationTime, timeZone, lastSent, lastPracticed] =
+      await Promise.all([
+        redis('GET', 'notificationsEnabled'),
+        redis('GET', 'subscription'),
+        redis('GET', 'notificationTime'),
+        redis('GET', 'timeZone'),
+        redis('GET', 'lastSent'),
+        redis('GET', 'lastPracticed'),
+      ]);
+  } catch (err) {
+    console.error('send: redis read failed:', err);
+    return new Response(JSON.stringify({ error: 'Failed to read notification state' }), {
+      status: 502,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
   if (enabled !== 'true') {
     return new Response(JSON.stringify({ skipped: 'disabled' }), {
@@ -56,9 +65,13 @@ export default async () => {
     });
   }
 
+  // Runs on a 15-minute schedule, so an exact-minute match would miss the
+  // reminder most days. Instead fire on the first tick at or after the
+  // target time; the lastSent-today check below stops it firing again on
+  // later ticks the same day.
   const currentTime = getCurrentTimeInZone(timeZone);
-  if (!currentTime || currentTime !== notificationTime) {
-    return new Response(JSON.stringify({ skipped: `not time (${currentTime})` }), {
+  if (!currentTime || currentTime < notificationTime) {
+    return new Response(JSON.stringify({ skipped: `not time yet (${currentTime})` }), {
       headers: { 'Content-Type': 'application/json' },
     });
   }
@@ -76,22 +89,36 @@ export default async () => {
     });
   }
 
-  const subscription = JSON.parse(subscriptionStr);
-  await webpush.sendNotification(
-    subscription,
-    JSON.stringify({
-      title: 'Morse Code Trainer',
-      body: 'Time to practice! Keep your streak going.',
-      icon: '/favicon.svg',
-      tag: 'daily-reminder',
-    })
-  );
+  try {
+    const subscription = JSON.parse(subscriptionStr);
+    await webpush.sendNotification(
+      subscription,
+      JSON.stringify({
+        title: 'Morse Code Trainer',
+        body: 'Time to practice! Keep your streak going.',
+        icon: '/favicon.svg',
+        tag: 'daily-reminder',
+      })
+    );
+  } catch (err) {
+    console.error('send: push send failed:', err);
+    return new Response(JSON.stringify({ error: 'Failed to send push notification' }), {
+      status: 502,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
-  await redis('SET', 'lastSent', today);
+  try {
+    await redis('SET', 'lastSent', today);
+  } catch (err) {
+    // Notification already went out; log loudly since a failure here means
+    // the user may get duplicate pushes on the next run(s).
+    console.error('send: failed to record lastSent after successful push:', err);
+  }
 
   return new Response(JSON.stringify({ sent: true }), {
     headers: { 'Content-Type': 'application/json' },
   });
 };
 
-export const config = { schedule: '* * * * *' };
+export const config = { schedule: '*/15 * * * *' };

@@ -21,7 +21,15 @@ export default async (request) => {
     day: '2-digit',
   }).format(new Date());
 
-  await redis('SET', 'lastPracticed', today);
+  try {
+    await redis('SET', 'lastPracticed', today);
+  } catch (err) {
+    console.error('practiced: redis write failed:', err);
+    return new Response(JSON.stringify({ error: 'Failed to record practice' }), {
+      status: 502,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
   return new Response(JSON.stringify({ ok: true, date: today }), {
     headers: { 'Content-Type': 'application/json' },
